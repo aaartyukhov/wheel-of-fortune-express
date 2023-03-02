@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
+const errorHandler = require('./middlewares/error-handler');
 const cors = require('cors');
 
 const { DB_ADDRESS } = require('./config');
@@ -30,5 +32,6 @@ app.get('/crash-test', () => {
 });
 
 app.use(routes);
-
+app.use(errors());
+app.use(errorHandler);
 app.listen(PORT, () => console.log(`Server started at port: ${PORT}`));
