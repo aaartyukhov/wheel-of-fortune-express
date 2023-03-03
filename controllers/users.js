@@ -29,6 +29,22 @@ const createUser = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      throw new NotFoundError('Юзер не найден');
+    }
+
+    const deletedUser = await User.deleteOne(user);
+    res.status(200).send(deletedUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getPresentUser = async (req, res, next) => {
   const { id } = req.params;
 
@@ -77,4 +93,5 @@ module.exports = {
   createUser,
   getPresentUser,
   getUsers,
+  deleteUser,
 };
