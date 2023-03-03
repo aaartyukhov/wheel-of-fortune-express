@@ -3,9 +3,9 @@ const NotFoundError = require('../errors/not-found-error');
 const Present = require('../models/presents');
 
 const createPresent = async (req, res, next) => {
-  const { name, count } = req.body;
+  const { name, count, description } = req.body;
   try {
-    const newPresent = await Present.create({ name, count });
+    const newPresent = await Present.create({ name, count, description });
     res.status(201).send(newPresent);
   } catch (error) {
     if (error.code === 11000) {

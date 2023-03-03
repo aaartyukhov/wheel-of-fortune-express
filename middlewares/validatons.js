@@ -25,6 +25,11 @@ const validatePresentBody = celebrate({
       .messages({
         'string.empty': 'Поле "count" должно быть заполнено',
       }),
+    description: Joi.string()
+      .required()
+      .messages({
+        'string.empty': 'Поле "description" должно быть заполнено',
+      }),
   }),
 });
 
