@@ -1,10 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const errorHandler = require('./middlewares/error-handler');
-const cors = require('cors');
+const { requestLogger, errorLogger } = require('./middlewares/logger')
 
 const { DB_ADDRESS } = require('./config');
 const routes = require('./routes');
@@ -24,6 +25,8 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(requestLogger);
+
 // краш-тест сервера
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -32,6 +35,8 @@ app.get('/crash-test', () => {
 });
 
 app.use(routes);
+
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 app.listen(PORT, () => console.log(`Server started at port: ${PORT}`));
