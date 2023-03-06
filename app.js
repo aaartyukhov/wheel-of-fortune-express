@@ -34,11 +34,6 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.use((req, res, next)=> {
-  console.log(req);
-  next();
-});
-
 app.use(routes);
 
 app.use(errorLogger);
