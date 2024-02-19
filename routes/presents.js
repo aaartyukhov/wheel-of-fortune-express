@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { createPresent, deletePresent, getPresents } = require('../controllers/presents');
-const { validatePresentBody, validateObjId } = require('../middlewares/validatons');
+const { validatePresentBody, validateObjId } = require('../middlewares/validators');
 
 router.get('/', getPresents);
 router.post('/', validatePresentBody, createPresent);

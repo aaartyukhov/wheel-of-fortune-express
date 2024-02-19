@@ -2,7 +2,7 @@ const router = require('express').Router();
 const {
   createUser, getPresentUser, getUsers, deleteUser,
 } = require('../controllers/users');
-const { validateUserBody, validateObjId } = require('../middlewares/validatons');
+const { validateUserBody, validateObjId } = require('../middlewares/validators');
 
 router.get('/', getUsers);
 router.post('/', validateUserBody, createUser);
