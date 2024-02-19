@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -7,10 +6,9 @@ const { errors } = require('celebrate');
 const errorHandler = require('./middlewares/error-handler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { DB_ADDRESS } = require('./config');
+const { DB_ADDRESS, PORT } = require('./config');
 const routes = require('./routes');
 
-const { PORT = 3000 } = process.env;
 const app = express();
 mongoose.connect(DB_ADDRESS, {
   useNewUrlParser: true,
