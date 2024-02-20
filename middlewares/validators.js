@@ -13,23 +13,30 @@ const validateUserBody = celebrate({
   }),
 });
 
+const presentSchema = {
+  name: Joi.string()
+    .required()
+    .messages({
+      'string.empty': 'Поле "name" должно быть заполнено',
+    }),
+  count: Joi.number()
+    .messages({
+      'string.empty': 'Поле "count" должно быть заполнено',
+    }),
+  isInfinity: Joi.boolean()
+    .required()
+    .messages({
+      'string.empty': 'Поле "isInfinity" должно быть заполнено',
+    }),
+};
+
 const validatePresentBody = celebrate({
+  body: Joi.object().keys(presentSchema),
+});
+
+const validatePresentsBody = celebrate({
   body: Joi.object().keys({
-    name: Joi.string()
-      .required()
-      .messages({
-        'string.empty': 'Поле "name" должно быть заполнено',
-      }),
-    count: Joi.number()
-      .required()
-      .messages({
-        'string.empty': 'Поле "count" должно быть заполнено',
-      }),
-    description: Joi.string()
-      .required()
-      .messages({
-        'string.empty': 'Поле "description" должно быть заполнено',
-      }),
+    presents: Joi.array().required().items(presentSchema),
   }),
 });
 
@@ -48,4 +55,5 @@ module.exports = {
   validateUserBody,
   validatePresentBody,
   validateObjId,
+  validatePresentsBody,
 };

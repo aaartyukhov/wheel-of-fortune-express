@@ -1,9 +1,10 @@
 const router = require('express').Router();
-const { createPresent, deletePresent, getPresents } = require('../controllers/presents');
-const { validatePresentBody, validateObjId } = require('../middlewares/validators');
+const { deletePresent, getPresents, createPresents } = require('../controllers/presents');
+const { validateObjId, validatePresentsBody } = require('../middlewares/validators');
 
 router.get('/', getPresents);
-router.post('/', validatePresentBody, createPresent);
+// router.post('/', validatePresentBody, createPresent);
+router.post('/', validatePresentsBody, createPresents);
 router.delete('/:id', validateObjId, deletePresent);
 
 module.exports = router;

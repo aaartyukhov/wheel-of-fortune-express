@@ -4,16 +4,16 @@ const presentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Поле "name" должно быть заполнено'],
-    unique: false,
+    unique: true,
   },
   count: {
     type: Number,
-    required: [true, 'Поле "count" должно быть заполнено'],
+    required: false,
     unique: false,
   },
-  description: {
-    type: String,
-    required: [true, 'Поле "description" должно быть заполнено'],
+  isInfinity: {
+    type: Boolean,
+    required: [true, 'Поле "isInfinity" должно быть заполнено'],
     unique: false,
   },
   createdAt: {

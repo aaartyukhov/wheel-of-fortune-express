@@ -1,12 +1,18 @@
 const User = require('../models/user');
 const Present = require('../models/presents');
+const PresentRequestCounter = require('../models/presentRequestCounter');
 const NotFoundError = require('../errors/not-found-error');
 const randomInteger = require('../helpers/random');
 const ConflictError = require('../errors/conflict-error');
+const {
+  PRESENT_REQUEST_COUNTER_VALUE,
+  PRESENT_REQUEST_COUNTER_FIELD,
+  NUMBER_OF_WINNER,
+} = require('../constants/common');
 
 const getUsers = async (req, res, next) => {
   try {
-    const users = await User.find({ }).populate('present');
+    const users = await User.find({}).populate('present');
     res.status(200).send(users);
   } catch (error) {
     next(error);
@@ -35,7 +41,7 @@ const deleteUser = async (req, res, next) => {
     const user = await User.findById(id);
 
     if (!user) {
-      throw new NotFoundError('Юзер не найден');
+      throw new NotFoundError('Пользователь не найден');
     }
 
     const deletedUser = await User.deleteOne(user);
@@ -65,17 +71,61 @@ const getPresentUser = async (req, res, next) => {
       throw new NotFoundError('Подарки не найдены');
     }
 
-    const actualPresents = presents.filter((present) => present.count > 0);
+    const presentRequestCounter = await PresentRequestCounter.findOne({
+      [PRESENT_REQUEST_COUNTER_FIELD]: PRESENT_REQUEST_COUNTER_VALUE,
+    });
+
+    let currentRequestCount;
+
+    // проверяем, есть ли запись счетчика, если нет создаем первый
+
+    if (!presentRequestCounter) {
+      await PresentRequestCounter.create({
+        [PRESENT_REQUEST_COUNTER_FIELD]: PRESENT_REQUEST_COUNTER_VALUE,
+        requestCount: 1,
+      });
+
+      currentRequestCount = 1;
+    } else {
+      // если есть, получаем и увеличиваем на 1
+      currentRequestCount = presentRequestCounter.requestCount + 1;
+      await PresentRequestCounter.updateOne(
+        {
+          [PRESENT_REQUEST_COUNTER_FIELD]: PRESENT_REQUEST_COUNTER_VALUE,
+        },
+        {
+          $inc: {
+            requestCount: 1,
+          },
+        },
+      );
+    }
+
+    let actualPresents;
+    const limitedPresents = presents
+      .filter((present) => !present.isInfinity)
+      .filter((present) => present.count > 0);
+
+    // по ТЗ лимитированный подарок получает только N-й пользователь
+    const isLimitedPresent = currentRequestCount % NUMBER_OF_WINNER === 0 && limitedPresents.length;
+
+    if (isLimitedPresent) {
+      actualPresents = limitedPresents;
+    } else {
+      actualPresents = presents.filter((present) => present.isInfinity);
+    }
 
     const indexPresent = randomInteger(1, actualPresents.length) - 1;
 
     const usersPresentId = actualPresents[indexPresent]._id;
 
-    const newCountPresent = actualPresents[indexPresent].count - 1;
+    if (isLimitedPresent) {
+      const newCountPresent = actualPresents[indexPresent].count - 1;
 
-    await Present.findByIdAndUpdate(usersPresentId, {
-      $set: { count: newCountPresent },
-    });
+      await Present.findByIdAndUpdate(usersPresentId, {
+        $set: { count: newCountPresent },
+      });
+    }
 
     const newUser = await User.findByIdAndUpdate(
       id,

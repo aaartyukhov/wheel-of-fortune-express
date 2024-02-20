@@ -2,10 +2,20 @@ const NotFoundError = require('../errors/not-found-error');
 const Present = require('../models/presents');
 
 const createPresent = async (req, res, next) => {
-  const { name, count, description } = req.body;
+  const { name, count, isInfinity } = req.body;
   try {
-    const newPresent = await Present.create({ name, count, description });
+    const newPresent = await Present.create({ name, count, isInfinity });
     res.status(201).send(newPresent);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createPresents = async (req, res, next) => {
+  const { presents } = req.body;
+  try {
+    const newPresents = await Present.insertMany(presents);
+    res.status(201).send(newPresents);
   } catch (error) {
     next(error);
   }
@@ -38,6 +48,7 @@ const getPresents = async (req, res, next) => {
 
 module.exports = {
   createPresent,
+  createPresents,
   deletePresent,
   getPresents,
 };
