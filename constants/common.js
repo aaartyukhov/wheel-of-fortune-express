@@ -1,4 +1,4 @@
-const NUMBER_OF_WINNER = 2;
+const NUMBER_OF_WINNER = 22;
 const PRESENT_REQUEST_COUNTER_FIELD = 'counterField';
 const PRESENT_REQUEST_COUNTER_VALUE = 'counterValue';
 
